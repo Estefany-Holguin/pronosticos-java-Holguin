@@ -1,0 +1,61 @@
+# Flujo de integración y despliegue continuos (CI/CD).
+#
+# Integración continua (CI): cada cambio que llega al repositorio se verifica
+# automáticamente, sin depender de que alguien recuerde correr las pruebas.
+# Despliegue continuo (CD): si la verificación pasa, el cambio se publica.
+# En este proyecto el despliegue es simulado: solo imprime un mensaje.
+#
+# En GitHub Actions este archivo es un "workflow". Contiene "jobs" (trabajos que
+# corren en una máquina virtual llamada runner) y cada job contiene "steps" (pasos).
+
+name: CI/CD
+
+# Eventos que disparan el workflow: un push a main o un pull request hacia main.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # CI: pruebas unitarias
+  # ---------------------------------------------------------------------------
+  pruebas-unitarias:
+    name: Pruebas unitarias
+    runs-on: ubuntu-latest
+    steps:
+      # Descarga el código del repositorio en el runner.
+      - name: Descargar el código
+        uses: actions/checkout@v6
+
+      # Instala Java 21 (distribución Eclipse Temurin) y guarda en caché el
+      # repositorio local de Maven para no descargar las dependencias cada vez.
+      - name: Instalar Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      # -B (batch mode) evita los mensajes interactivos y las barras de progreso.
+      # -Dtest selecciona solo las clases de prueba del paquete "unitarias".
+      - name: Ejecutar pruebas unitarias
+        run: mvn -B test -Dtest='**/unitarias/*Test'
+
+  # ---------------------------------------------------------------------------
+  # CD: despliegue simulado
+  # ---------------------------------------------------------------------------
+  despliegue:
+    name: Despliegue (simulado)
+    # needs: el despliegue solo corre si todos los jobs listados terminaron bien.
+    # Si una prueba falla, este job no se ejecuta y nada llega a producción.
+    needs: [pruebas-unitarias]
+    # Solo se despliega lo que entra a main, nunca desde un pull request.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Desplegar
+        run: |
+          echo "Versión: ${{ github.sha }}"
+          echo "Desplegado"

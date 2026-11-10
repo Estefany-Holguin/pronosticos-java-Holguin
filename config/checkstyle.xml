@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+<!--
+  Reglas de análisis estático del proyecto.
+
+  Es un conjunto corto y explicable a propósito: cada regla corresponde a algo
+  visto en clase (código sobrante, nombres, complejidad). Las configuraciones
+  completas como google_checks.xml existen, pero en un proyecto de aprendizaje
+  generan cientos de avisos de formato que ocultan los hallazgos importantes.
+-->
+<module name="Checker">
+    <property name="charset" value="UTF-8"/>
+    <property name="severity" value="error"/>
+
+    <!-- Indentación con espacios, nunca con tabulaciones. -->
+    <module name="FileTabCharacter"/>
+
+    <module name="TreeWalker">
+        <!-- Código sobrante -->
+        <module name="UnusedImports"/>
+        <module name="RedundantImport"/>
+        <module name="UnusedLocalVariable"/>
+        <module name="EmptyBlock"/>
+
+        <!-- Importaciones explícitas: se ve de dónde viene cada clase. -->
+        <module name="AvoidStarImport"/>
+
+        <!-- Llaves obligatorias en if, for y while, incluso con una sola línea. -->
+        <module name="NeedBraces"/>
+
+        <!-- Una variable por declaración. -->
+        <module name="MultipleVariableDeclarations"/>
+
+        <!-- Convenciones de nombres de Java. -->
+        <module name="MethodName"/>
+        <module name="LocalVariableName"/>
+        <module name="ParameterName"/>
+        <module name="ConstantName"/>
+        <module name="TypeName"/>
+
+        <!-- Complejidad ciclomática máxima por método (decisiones + 1). -->
+        <module name="CyclomaticComplexity">
+            <property name="max" value="5"/>
+        </module>
+    </module>
+</module>

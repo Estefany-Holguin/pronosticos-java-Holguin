@@ -1,0 +1,10 @@
+# Compilación y reportes generados por Maven
+target/
+
+# Configuración local de los editores
+.idea/
+*.iml
+.vscode/
+
+# Archivos del sistema operativo
+.DS_Store
