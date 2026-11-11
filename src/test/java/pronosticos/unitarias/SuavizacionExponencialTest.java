@@ -32,7 +32,7 @@ class SuavizacionExponencialTest {
     }
     @Test
     @DisplayName("Con alfa 1 el pronostico es la ultima demanda")
-    void ElPronosticoEsLaUltimaDemanda(){
+    void conAlfa1ElPronosticoEsLaUltimaDemanda() {
         double resultado = new CalculadoraPronosticos().suavizacionExponencial(SERIE, 1.0);
         assertEquals(150.0, resultado, 0.01);
     }
