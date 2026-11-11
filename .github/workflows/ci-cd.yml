@@ -18,6 +18,61 @@ on:
     branches: [main]
 
 jobs:
+  cobertura:
+    name: Cobertura
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v6
+
+      - name: Instalar Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      # -B (batch mode) evita los mensajes interactivos y las barras de progreso.
+      # -Dtest selecciona solo las clases de prueba del paquete "unitarias".
+      # -Djacoco.skip=false fuerza la ejecución de JaCoCo aunque esté deshabilitado.
+      - name: Ejecutar pruebas unitarias con cobertura
+        run: mvn -B verify
+  pruebas-bdd:
+    name: Pruebas BDD
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v6
+
+      - name: Instalar Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      # -B (batch mode) evita los mensajes interactivos y las barras de progreso.
+      # -Dtest selecciona solo las clases de prueba del paquete "bdd".
+      - name: Ejecutar pruebas BDD
+        run: mvn -B test -Dtest=RunCucumberTest
+
+  analisis-estatico:
+    name: Análisis estático
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v6
+
+      - name: Instalar Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      # Revisa código sobrante, nombres y complejidad sin ejecutar el código.
+      - name: Revisar el código con Checkstyle
+        run: mvn -B checkstyle:check
   # ---------------------------------------------------------------------------
   # CI: pruebas unitarias
   # ---------------------------------------------------------------------------
@@ -50,7 +105,7 @@ jobs:
     name: Despliegue (simulado)
     # needs: el despliegue solo corre si todos los jobs listados terminaron bien.
     # Si una prueba falla, este job no se ejecuta y nada llega a producción.
-    needs: [pruebas-unitarias]
+    needs: [analisis-estatico, pruebas-unitarias, pruebas-bdd, cobertura]
     # Solo se despliega lo que entra a main, nunca desde un pull request.
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
