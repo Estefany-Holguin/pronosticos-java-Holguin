@@ -95,17 +95,19 @@ public class CalculadoraPronosticos {
         }
         return suma;
     }
-    public double suavizacionExponencial(List<Double> serie, double alpha) {
-        if (alpha < 0 || alpha > 1) {
-            throw new IllegalArgumentException("El parámetro alpha debe estar entre 0 y 1");
+
+    public double suavizacionExponencial(List<Double> serie, double alfa) {
+        if (alfa < 0 || alfa > 1) {
+            throw new IllegalArgumentException("Alfa debe estar en el rango [0, 1]");
         }
         if (serie.isEmpty()) {
             throw new IllegalArgumentException("La serie no puede estar vacía");
         }
 
-        double pronostico = serie.get(0); // Inicializa con el primer valor de la serie
-        for (int i = 1; i < serie.size(); i++) {
-            pronostico = alpha * serie.get(i) + (1 - alpha) * pronostico;
+        double pronostico = serie.get(0);
+        for (int periodo = 1; periodo < serie.size(); periodo++) {
+            double demanda = serie.get(periodo);
+            pronostico = pronostico + alfa * (demanda - pronostico);
         }
         return pronostico;
     }
